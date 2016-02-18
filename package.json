@@ -1,0 +1,25 @@
+{
+  "name": "spaceinvader",
+  "version": "1.0.0",
+  "description": "��S\u0000p\u0000a\u0000c\u0000e\u0000 \u0000I\u0000n\u0000v\u0000a\u0000d\u0000e\u0000r\u0000s\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lavhmrps/spaceinvaders.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lavhmrps/spaceinvaders/issues"
+  },
+  "homepage": "https://github.com/lavhmrps/spaceinvaders#readme",
+  "devDependencies": {
+    "browser-sync": "^2.11.1",
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.2"
+  }
+}
