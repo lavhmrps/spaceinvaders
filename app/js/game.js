@@ -11,7 +11,11 @@
 	bullet=0,
 	bullets = [],
 	points = [],
+	ufo = null,
+
 	sfx_explosion = new Audio("sfx/explosion.wav"),
+	sfx_shoot = new Audio("sfx/shoot.wav"),
+	sfx_ufo_highpitch = new Audio("sfx/ufo_highpitch.wav"),
 
 	currentstate, 
 	states = {
@@ -49,6 +53,8 @@
 
 		init: function(){
 			this.velocity = 75;
+			this.y += Math.min(10*score.level,100);
+
 			bullets= [];
 			this._aliens = [];
 
@@ -68,7 +74,7 @@
 							y: _y,
 							w: s_alien[v][0].width, 
 							h: s_alien[v][0].height,
-							score: 50-20*v
+							value: 50-20*v
 						}
 					);
 				}
@@ -94,13 +100,13 @@
 					try{
 						if(b.dir == -1 && b.x +b.w >= a.x && b.x <= a.x+a.w && b.y+b.h >= a.y && b.y <= a.y+a.h){
 							points.push({
-								value: a.score,
+								value: a.value,
 								x: a.x,
 								y:a.y,
 								t:0
 							});
 
-							score.score += a.score;
+							score.score += a.value;
 							this._aliens.splice(i,1);
 							i--;len--;
 							bullets.splice(j,1);
@@ -114,21 +120,27 @@
 				}
 			}
 
-			
-
-			// Alien fire!
-			if(this._aliens.length > 1 && frames % 10 === 0 && Math.random() < .1){
-				var a = this._aliens[Math.floor(Math.random()*this._aliens.length)];
-				// console.log(a);
-				bullets.push({
-					f:0,
-					sprite: s_bulletAlien,
-					x: a.x,
-					y: a.y - 2,
-					v:2,
-					dir: 1
-				});
+			if(ufo !== null){
+				sfx_ufo_highpitch.play();
+				var u = ufo;
+				for(var i = 0, len = bullets.length; i<len; i++){
+					var b = bullets[i];
+					try{
+						if(b.dir === -1 && b.x+b.w >= u.x && b.x <= u.x+u.w && b.y+b.h >= u.y && b.y <= u.y+u.h){
+							score.score += u.value;
+							points.push({
+								value: u.value,
+								x: u.x,
+								y:u.y,
+								t:0
+							});
+							bullets.splice(i,1);
+							ufo = null;
+						}	
+					}catch(ex){}
+				}
 			}
+
 
 
 			if( frames % this.velocity == 0){
@@ -163,19 +175,53 @@
 				}
 			}
 
+			// Alien fire
+			if(this._aliens.length > 1 && frames % 10 === 0 && Math.random() < .05*score.level){
+				var a = this._aliens[Math.floor(Math.random()*this._aliens.length)];
+				bullets.push({
+					f:0,
+					sprite: s_bulletAlien,
+					x: a.x,
+					y: a.y - 2,
+					v:2,
+					dir: 1
+				});
+				sfx_shoot.play();
+			}
+
+			// spawn ufo
+			if(ufo == null && this._aliens.length > 1 && frames % 10 === 0 && Math.random() < .005){
+				var dir = Math.random() < .5 ? -1:1;
+				ufo = {
+					sprite: s_ufo,
+					x:dir==1?0:width,
+					y:35,
+					w: s_ufo.width,
+					h: s_ufo.height,
+					dir: dir,
+					velocity: Math.floor(Math.random()*3)+2,
+					value: Math.floor(Math.random()*20)*10+100
+				}
+			}
+			
+
 			this.velocity = this._aliens.length + 18 - 3* Math.min(score.level,5);
 
 		},
 
 		draw:function(ctx){
-			ctx.save();
-
 			for(var i=0, len=this._aliens.length; i < len;i++){
 				var a = this._aliens[i];
 				a.sprite[this.frame%this.animation.length].draw(ctx, a.x, a.y);
 			}
 
-			ctx.restore();
+			if(ufo !== null){
+				s_ufo.draw(ctx,ufo.x,ufo.y);
+				ufo.x += ufo.velocity * ufo.dir ;
+				if(ufo.x < 0 - s_ufo.width || ufo.x > width)
+					ufo = null;
+
+			}
 		}
 	},
 
@@ -353,6 +399,7 @@
 			this.score = 0;
 			this.lives= 3;
 			this.level=0;
+			console.log(this.hiscore);
 
 		},
 		update: function(){
@@ -387,10 +434,21 @@
 			ctx.fillStyle="rgba(255,100,100,.8)";
 			for(var i =0; i< points.length; i++){
 				var p = points[i];
-				if(frames%3==0)
+				if(frames%3==0 && p.value <100)
 					p.y--;
+				if(frames%5==0 && p.value >=100)
+					p.y++;
 				p.t++;
-				ctx.fillText(p.value, p.x, p.y);
+				if(p.value>=100){
+					ctx.save();
+					ctx.font = "25px monospace";
+					ctx.fillText(p.value, p.x, p.y);
+					ctx.restore();
+
+				}else{
+					ctx.fillText(p.value, p.x, p.y);
+					
+				}
 				ctx.fill();
 				if(p.t > 60)
 					points.splice(i--,1);
@@ -417,17 +475,18 @@
 		game.style.width = width+"px";
 		game.style.height = height+"px";
 
-
 		input = new InputHandler();
 		currentstate = states.Splash;
 
 		ctx = canvas.getContext("2d");
 
-
-
 		img = new Image();
 		img.src = "res/sprite_sheet.png";
 		img.src = "res/sprite_sheet-transparent.png";
+
+		sfx_explosion.volume = .01;
+		sfx_shoot.volume = .01;
+		sfx_ufo_highpitch.volume = .01;
 		
 		img.onload = function(){
 			initSprites(this);
@@ -435,10 +494,10 @@
 			background = generateBackground(50);
 
 			frames = 0;
+			score.init();
 			ship.init();
 			aliens.init();
 			cities.init();
-			score.init();
 
 			run();
 		};

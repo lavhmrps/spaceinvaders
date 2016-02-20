@@ -2,7 +2,7 @@ var
 
 s_alien,
 s_bgColor,
-s_bonusAlien,
+s_ufo,
 s_bulletAlien,
 s_bulletShip,
 s_city,
@@ -35,7 +35,7 @@ function initSprites(img){
 
 		s_bgColor = "#1f282d";
 
-		s_bonusAlien = new Sprite(img, 216,222,50,22);
+		s_ufo = new Sprite(img, 216,222,50,22);
 		
 		s_bulletAlien = [
 							new Sprite(img, 320,267,4,9),
