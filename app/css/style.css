@@ -4,17 +4,19 @@
 }
 
 .container{
+	width: 90%;
 	position: relative;
-	margin:0 15px;
+	margin:0 auto;
 }
 
 .title{
 	text-align: center;
 }
 
-#invadersCanvas{
-	position: absolute;
-	top:0;bottom:0;left:0;right:0;
+#game{
 	margin:0 auto;
+}
+
+#invadersCanvas{
 	border:thin solid #ccc;
 }
