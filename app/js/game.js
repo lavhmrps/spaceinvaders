@@ -16,6 +16,7 @@
 	sfx_explosion = new Audio("sfx/explosion.wav"),
 	sfx_shoot = new Audio("sfx/shoot.wav"),
 	sfx_ufo_highpitch = new Audio("sfx/ufo_highpitch.wav"),
+	volume, 
 
 	currentstate, 
 	states = {
@@ -484,9 +485,11 @@
 		img.src = "res/sprite_sheet.png";
 		img.src = "res/sprite_sheet-transparent.png";
 
-		sfx_explosion.volume = .01;
-		sfx_shoot.volume = .01;
-		sfx_ufo_highpitch.volume = .01;
+		volume = .05;
+
+		sfx_explosion.volume = volume;
+		sfx_shoot.volume = volume;
+		sfx_ufo_highpitch.volume = volume;
 		
 		img.onload = function(){
 			initSprites(this);
