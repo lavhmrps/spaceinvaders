@@ -54,11 +54,11 @@ gulp.task("sfx", function(){
 
 gulp.task("watch", function(){
 	gulp.watch("src/*.html", ["html"]);
-	// gulp.watch("src/js/*.js", ["scripts"]); //, "scripts-uglify"]);
+	gulp.watch("src/js/*.js", ["scripts"]); //, "scripts-uglify"]);
 	gulp.watch("src/css/*.css", ["css"]);
 	gulp.watch("src/res/**/*.*", ["res"]);
 	gulp.watch("src/sfx/**/*.*", ["sfx"]);
 });
 
 
-gulp.task("default",["server","html",/*"scripts", /*"scripts-uglify",*/ "css", "res", "sfx", "watch"]);
+gulp.task("default",["server","html","scripts", /*"scripts-uglify",*/ "css", "res", "sfx", "watch"]);

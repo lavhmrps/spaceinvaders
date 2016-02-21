@@ -13,9 +13,16 @@
 	points = [],
 	ufo = null,
 
+
 	sfx_explosion = new Audio("sfx/explosion.wav"),
 	sfx_shoot = new Audio("sfx/shoot.wav"),
 	sfx_ufo_highpitch = new Audio("sfx/ufo_highpitch.wav"),
+	sfx_bass1 = new Audio("sfx/bass-1.wav"),
+	sfx_bass2 = new Audio("sfx/bass-2.wav"),
+	sfx_bass3 = new Audio("sfx/bass-3.wav"),
+	sfx_bass4 = new Audio("sfx/bass-4.wav"),
+	bassCounter=0,
+
 	volume, 
 
 	currentstate, 
@@ -39,11 +46,13 @@
 		frame: 0,
 		dir: 1,
 		animation: [0,1],
-		velocity: 60,
+		velocity: 0,
+		baseVelo: 0,
 
 		reset: function(){
 			this._aliens = [];
 			this.velocity = 0;
+			this.baseVelo = 65;
 			this.x=20;
 			this.y=60;
 			this.dir=1;
@@ -113,7 +122,7 @@
 							bullets.splice(j,1);
 							j--, len2--;
 
-							frames -= (frames % 60)-1;
+							//frames -= (frames % 60)-1;
 						
 							
 						}
@@ -144,6 +153,7 @@
 
 
 
+			// alien move
 			if( frames % this.velocity == 0){
 				this.frame ++;
 				var _minX = width, _maxX= 0, _maxY = 0;
@@ -174,10 +184,26 @@
 						}
 					}
 				}
+				// play move-sound
+				switch(bassCounter++%4){
+					case 0:
+						sfx_bass1.play();
+						break;
+					case 1:
+						sfx_bass2.play();
+						break;
+					case 2:
+						sfx_bass3.play();
+						break;
+					case 3:
+						sfx_bass4.play();
+						break;
+				}
+
 			}
 
 			// Alien fire
-			if(this._aliens.length > 1 && frames % 10 === 0 && Math.random() < .05*score.level){
+			if(this._aliens.length > 0 && frames % 10 === 0 && Math.random() < .05*score.level){
 				var a = this._aliens[Math.floor(Math.random()*this._aliens.length)];
 				bullets.push({
 					f:0,
@@ -205,8 +231,8 @@
 				}
 			}
 			
-
-			this.velocity = this._aliens.length + 18 - 3* Math.min(score.level,5);
+				this.velocity = len+20 - 2*Math.min(score.level,7);
+			
 
 		},
 
@@ -489,7 +515,11 @@
 
 		sfx_explosion.volume = volume;
 		sfx_shoot.volume = volume;
-		sfx_ufo_highpitch.volume = volume;
+		sfx_ufo_highpitch.volume = volume/2;
+		sfx_bass1.volume = 2*volume;
+		sfx_bass2.volume = 2*volume;
+		sfx_bass3.volume = 2*volume;
+		sfx_bass4.volume = 2*volume;
 		
 		img.onload = function(){
 			initSprites(this);
