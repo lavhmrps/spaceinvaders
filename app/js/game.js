@@ -399,7 +399,7 @@
 			this.hiscore = localStorage.getItem("highscore") || 0;
 			this.score = 0;
 			this.lives= 3;
-			this.level=0;
+			this.level = 1;
 			console.log(this.hiscore);
 
 		},
@@ -421,7 +421,7 @@
 			ctx.save();
 			ctx.font ="15px monospace";
 			ctx.fillStyle= "white";
-			ctx.fillText("Level: "+(score.level+1), 250, 25);
+			ctx.fillText("Level: "+(score.level), 250, 25);
 			ctx.restore();
 
 			s_credit.draw(ctx,width/1.6,10);
